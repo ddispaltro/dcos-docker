@@ -13,3 +13,4 @@ genconf/cluster_packages.json
 packer_cache
 *.box
 output-virtualbox-ovf
+output-virtualbox-iso/

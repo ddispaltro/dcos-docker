@@ -11,3 +11,8 @@ genconf/serve/
 Vagrantfile
 dcos-genconf.*.tar
 vagrant/
+*.ova
+packer_cache
+*.box
+output-virtualbox-ovf
+output-virtualbox-iso/

@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set +x
 
 update(){
 	apt-get -y update
@@ -38,7 +39,6 @@ base(){
 		less \
 		libc6-dev \
 		libltdl-dev \
-		linux-headers-$(uname -r) \
 		locales \
 		lsof \
 		make \
@@ -78,7 +78,7 @@ base(){
 	# the default is not to use butts for cgroups because the delegate issues still
 	# exists and butts currently does not support the cgroup feature set required
 	# for containers run by docker
-	ExecStart=/usr/bin/docker daemon -H fd:// -D -s aufs \
+	ExecStart=/usr/bin/docker daemon -H fd:// -D -s overlay \
 		--exec-opt=native.cgroupdriver=cgroupfs --disable-legacy-registry=true \
 		--bip 172.18.0.1/16
 	MountFlags=slave
@@ -111,28 +111,5 @@ base(){
 	update-grub
 }
 
-update_kernel(){
-	update
 
-	stretch_sources=/etc/apt/sources.list.d/stretch.list
-
-	echo "deb http://httpredir.debian.org/debian stretch main contrib non-free" > $stretch_sources
-
-	apt-get update
-	DEBIAN_FRONTEND=noninteractive apt-get install -y \
-		-o Dpkg::Options::="--force-confdef" \
-		-o Dpkg::Options::="--force-confold" \
-		-t stretch \
-		linux-image-amd64
-
-	rm $stretch_sources
-	update
-
-	reboot
-}
-
-if [[ "$1" == "kernel" ]]; then
-	update_kernel
-else
-	base
-fi
+base
