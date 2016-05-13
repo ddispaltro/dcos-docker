@@ -22,7 +22,6 @@ base(){
 		bridge-utils \
 		bzip2 \
 		ca-certificates \
-		cgroupfs-mount \
 		coreutils \
 		curl \
 		dkms \

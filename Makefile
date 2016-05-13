@@ -70,6 +70,11 @@ CERT_MOUNTS := \
 HOME_MOUNTS := \
 	-v $(HOME):$(HOME):ro
 
+INTERACTIVE := $(shell [ -t 0 ] && echo 1 || echo 0)
+ifeq ($(INTERACTIVE), 1)
+	PACKER_FLAGS += -var headless=false
+endif
+
 all: install info ## Runs a full deploy of DC/OS in containers.
 
 info: ips ## Provides information about the master and agent's ips.
@@ -241,7 +246,7 @@ clean-slice: ## Removes and cleanups up the systemd slice for the mesos executor
 	@sudo rm -f $(MESOS_SLICE)
 
 dcos-docker.box:
-	packer build -var box_output=$@ vagrant/packer.json
+	packer build -var box_output=$@ $(PACKER_FLAGS) vagrant/packer.json
 
 clean: clean-certs clean-containers clean-slice ## Stops all containers and removes all generated files for the cluster.
 	$(RM) $(CURDIR)/genconf/ssh_key
@@ -254,6 +259,8 @@ clean: clean-certs clean-containers clean-slice ## Stops all containers and remo
 	$(RM) $(CURDIR)/cluster_packages.json
 	$(RM) dcos-genconf.*.tar
 	$(RM) *.box
+	$(RM) -r packer_cache
+	$(RM) -r output*
 
 # Define the function to start a master or agent container. This also starts
 # docker and sshd in the resulting container, and makes sure docker started

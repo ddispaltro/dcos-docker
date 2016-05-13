@@ -2,6 +2,7 @@
     "description" : "Testing base box build using contrib sources",
     "variables": {
         "script": "/home/vagrant/provision.sh",
+        "headless": "true",
         "box_output": ""
     },
     "builders" : [
@@ -25,8 +26,7 @@
             ],
             "disk_size" : "10140",
             "guest_os_type" : "Debian_64",
-            "hard_drive_interface" : "sata",
-            "headless" : true,
+            "headless" : "{{user `headless`}}",
             "http_directory" : "vagrant/http",
             "iso_checksum": "7a6b418e6a4ee3ca75dda04d79ed96c9e2c33bb0c703ca7e40c6374ab4590748",
             "iso_checksum_type": "sha256",
@@ -42,7 +42,7 @@
                     "modifyvm",
                     "{{.Name}}",
                     "--memory",
-                    "512"
+                    "1024"
                 ],
                 [
                     "modifyvm",
