@@ -4,10 +4,10 @@ include common.mk
 .PHONY: all build build-all start master agent public_agent installer genconf registry open-browser preflight deploy clean clean-certs clean-containers clean-slice
 
 # Set the number of DC/OS masters.
-MASTERS := 1
+MASTERS := 3
 
 # Set the number of DC/OS agents.
-AGENTS := 1
+AGENTS := 5
 
 # Set the number of DC/OS public agents.
 PUBLIC_AGENTS := 1
@@ -101,8 +101,8 @@ master: ## Starts the containers for DC/OS masters.
 	$(foreach NUM,$(shell seq 1 $(MASTERS)),$(call start_dcos_container,$(MASTER_CTR),$(NUM),$(MASTER_MOUNTS) $(TMPFS_MOUNTS) $(CERT_MOUNTS) $(HOME_MOUNTS) $(VOLUME_MOUNTS)))
 
 $(MESOS_SLICE):
-	@echo -e '[Unit]\nDescription=Mesos Executors Slice' | sudo tee -a $@
-	@sudo systemctl start mesos_executors.slice
+	@echo -e '[Unit]\nDescription=Mesos Executors Slice' | tee -a $@
+	@systemctl start mesos_executors.slice
 
 agent: $(MESOS_SLICE) ## Starts the containers for DC/OS agents.
 	$(foreach NUM,$(shell seq 1 $(AGENTS)),$(call start_dcos_container,$(AGENT_CTR),$(NUM),$(TMPFS_MOUNTS) $(SYSTEMD_MOUNTS) $(CERT_MOUNTS) $(HOME_MOUNTS) $(VOLUME_MOUNTS)))
@@ -216,8 +216,8 @@ clean-containers: ## Removes and cleans up the master, agent, and installer cont
 	$(foreach NUM,$(shell seq 1 $(PUBLIC_AGENTS)),$(call remove_container,$(PUBLIC_AGENT_CTR),$(NUM)))
 
 clean-slice: ## Removes and cleanups up the systemd slice for the mesos executor.
-	@sudo systemctl stop mesos_executors.slice
-	@sudo rm -f $(MESOS_SLICE)
+	@systemctl stop mesos_executors.slice
+	@rm -f $(MESOS_SLICE)
 
 VAGRANT_BOX_VERSION := 8.4.0
 VAGRANT_OVF := $(HOME)/.vagrant.d/boxes/debian-VAGRANTSLASH-jessie64/$(VAGRANT_BOX_VERSION)/virtualbox/box.ovf
