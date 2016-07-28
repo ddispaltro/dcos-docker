@@ -21,6 +21,10 @@ DOCKER_GRAPHDRIVER := $(if $(DOCKER_GRAPHDRIVER),$(DOCKER_GRAPHDRIVER),$(shell d
 
 DCOS_GENERATE_CONFIG_PATH := $(CURDIR)/dcos_generate_config.sh
 
+# Settings for test command
+DCOS_PYTEST_DIR := /opt/mesosphere/active/dcos-integration-test/
+DCOS_PYTEST_CMD := 'py.test -vv'
+
 # Variable for the registry host
 REGISTRY_HOST := registry.local
 
