@@ -3,6 +3,9 @@ include common.mk
 
 .PHONY: all build build-all start master agent public_agent installer genconf registry open-browser preflight deploy clean clean-certs clean-containers clean-slice
 
+# Additional Help for Toolbox
+HOME := /home/core
+
 # Set the number of DC/OS masters.
 MASTERS := 3
 
