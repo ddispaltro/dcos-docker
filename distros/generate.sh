@@ -2,12 +2,12 @@
 set -e
 
 # usage: ./generate.sh [versions]
-#    ie: ./generate.sh
-#        to update all Dockerfiles in this directory
-#    or: ./generate.sh debian-jessie
-#        to only update debian-jessie/Dockerfile
-#    or: ./generate.sh debian-newversion
-#        to create a new folder and a Dockerfile within it
+#	ie: ./generate.sh
+#		to update all Dockerfiles in this directory
+#	or: ./generate.sh debian-jessie
+#		to only update debian-jessie/Dockerfile
+#	or: ./generate.sh debian-newversion
+#		to create a new folder and a Dockerfile within it
 
 cd "$(dirname "$(readlink -f "$BASH_SOURCE")")"
 
@@ -76,7 +76,7 @@ for version in "${versions[@]}"; do
 			packages=( "${packages[@]/libcgroup-dev/libcgroup}" )
 			packages=( "${packages[@]/libpopt0/}" )
 			packages=( "${packages[@]/debianutils/which}" )
-			packages=( "${packages[@]/vim-nox/vim-minimal}" )
+			packages=( "${packages[@]/vim-nox/vim}" )
 			packages=( "${packages[@]/xz-utils/xz}" )
 			;;
 		debian|ubuntu) packages+=( gawk );; ## needs GNU awk
@@ -87,15 +87,22 @@ for version in "${versions[@]}"; do
 		packages=( "${packages[@]/openssh-client/openssh-clients}" )
 	fi
 
+	IFS=$'\n' sorted=($(sort <<<"${packages[*]}"))
+
 	case "$distro" in
 		centos|rhel)
-			echo "RUN yum install -y ${packages[*]} \\" >> "$version/Dockerfile"
+			echo "RUN yum install -y \\" >> "$version/Dockerfile"
+			for p in ${sorted[*]}; do echo -e "	   $p \\" >> "$version/Dockerfile"; done;
 			;;
 		fedora)
-			echo "RUN dnf install -y ${packages[*]} \\" >> "$version/Dockerfile"
+			echo "RUN dnf install -y \\" >> "$version/Dockerfile"
+			for p in ${sorted[*]}; do echo -e "	   $p \\" >> "$version/Dockerfile"; done
 			;;
 		debian|ubuntu)
-			echo "RUN apt-get update && apt-get install -y ${packages[*]} --no-install-recommends && rm -rf /var/lib/apt/lists/* \\" >> "$version/Dockerfile"
+		echo "RUN apt-get update \\" >> "$version/Dockerfile"
+		echo "	&& apt-get install -y \\" >> "$version/Dockerfile"
+		for p in ${sorted[*]}; do echo -e "		$p \\" >> "$version/Dockerfile"; done
+		echo "	&& rm -rf /var/lib/apt/lists/* \\" >> "$version/Dockerfile"
 			;;
 		*) ;;
 	esac
