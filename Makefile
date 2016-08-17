@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := all
 include common.mk
 
-.PHONY: all build build-all start master agent public_agent installer genconf registry open-browser preflight deploy clean clean-certs clean-containers clean-slice
+.PHONY: all build build-all start master agent public_agent installer genconf registry open-browser preflight deploy clean clean-certs clean-containers clean-slice start-containers
 
 # Additional Help for Toolbox
 HOME := /home/core
@@ -217,6 +217,12 @@ clean-containers: ## Removes and cleans up the master, agent, and installer cont
 	$(foreach NUM,$(shell seq 1 $(MASTERS)),$(call remove_container,$(MASTER_CTR),$(NUM)))
 	$(foreach NUM,$(shell seq 1 $(AGENTS)),$(call remove_container,$(AGENT_CTR),$(NUM)))
 	$(foreach NUM,$(shell seq 1 $(PUBLIC_AGENTS)),$(call remove_container,$(PUBLIC_AGENT_CTR),$(NUM)))
+
+start-containers: ## Start them all back up (e.g. after a restart).
+	$(foreach NUM,$(shell seq 1 $(MASTERS)),$(call start_container,$(MASTER_CTR),$(NUM)))
+	$(foreach NUM,$(shell seq 1 $(AGENTS)),$(call start_container,$(AGENT_CTR),$(NUM)))
+	$(foreach NUM,$(shell seq 1 $(PUBLIC_AGENTS)),$(call start_container,$(PUBLIC_AGENT_CTR),$(NUM)))
+
 
 clean-slice: ## Removes and cleanups up the systemd slice for the mesos executor.
 	@systemctl stop mesos_executors.slice

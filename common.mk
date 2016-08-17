@@ -97,3 +97,10 @@ endef
 define remove_container
 docker rm -fv $(1)$(2) > /dev/null 2>&1 || true;
 endef
+
+# Define the function to start a container after it's been stopped.
+# @param name	  First part of the container name.
+# @param number	  ID of the container.
+define start_container
+docker start $(1)$(2) > /dev/null 2>&1 || true;
+endef
