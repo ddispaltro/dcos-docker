@@ -14,10 +14,15 @@ DOCKER_IMAGE := mesosphere/dcos-docker
 
 # Variable to set the correct Docker graphdriver to the currently running
 # graphdriver. This makes docker in docker work more efficiently.
-DOCKER_GRAPHDRIVER := $(if $(DOCKER_GRAPHDRIVER),$(DOCKER_GRAPHDRIVER),$(shell docker info | grep "Storage Driver" | sed 's/.*: //'))
+DOCKER_GRAPHDRIVER := $(if $(DOCKER_GRAPHDRIVER),$(DOCKER_GRAPHDRIVER),$(shell docker info 2>/dev/null | grep "Storage Driver" | sed 's/.*: //'))
 #ifneq ($(DOCKER_GRAPHDRIVER),$(filter $(DOCKER_GRAPHDRIVER),overlay aufs))
 #$(error Only `overlay` and `aufs` storage drivers are supported for DinD. Please check README.md for details)
 #endif
+#=======
+#ifneq ($(DOCKER_GRAPHDRIVER),$(filter $(DOCKER_GRAPHDRIVER),overlay aufs))
+#$(error Only `overlay` and `aufs` storage drivers are supported for DinD. Please check README.md for details)
+#endif
+#>>>>>>> 46e7d4aa436f91a047930ac534cffd426e1d48c5
 
 DCOS_GENERATE_CONFIG_PATH := $(CURDIR)/dcos_generate_config.sh
 
